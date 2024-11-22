@@ -1,9 +1,65 @@
-const { ethers } = require("ethers");
+const { BigNumber } = require("ethers");
 
 // Constants
-const FEES_BASE = ethers.BigNumber.from("1000000");
-const APPROX_PRECISION = ethers.BigNumber.from("1");
-const APPROX_PRECISION_BASE = ethers.BigNumber.from("1000000");
+const FEES_BASE = BigNumber.from("1000000");
+const APPROX_PRECISION = BigNumber.from("1");
+const APPROX_PRECISION_BASE = BigNumber.from("1000000");
+
+// Integer square root function
+function sqrtInteger(x) {
+  const ZERO = BigNumber.from(0);
+  const ONE = BigNumber.from(1);
+
+  if (x.eq(ZERO)) {
+    return ZERO;
+  }
+
+  let xx = x; // Clone x
+  let r = ONE; // Initial value for r
+
+  // Perform the shifting based on the ranges in the original function
+  if (xx.gte(BigNumber.from("100000000000000000000000000000000"))) {
+    // 32
+    xx = xx.shr(128);
+    r = r.shl(64);
+  }
+  if (xx.gte(BigNumber.from("10000000000000000"))) {
+    // 16
+    xx = xx.shr(64);
+    r = r.shl(32);
+  }
+  if (xx.gte(BigNumber.from("100000000"))) {
+    // 8
+    xx = xx.shr(32);
+    r = r.shl(16);
+  }
+  if (xx.gte(BigNumber.from("10000"))) {
+    // 4
+    xx = xx.shr(16);
+    r = r.shl(8);
+  }
+  if (xx.gte(BigNumber.from("100"))) {
+    // 2
+    xx = xx.shr(8);
+    r = r.shl(4);
+  }
+  if (xx.gte(BigNumber.from("10"))) {
+    // 1
+    xx = xx.shr(4);
+    r = r.shl(2);
+  }
+  if (xx.gte(BigNumber.from("8"))) {
+    r = r.shl(1);
+  }
+
+  // Perform Newton-Raphson iterations to refine the result
+  for (let i = 0; i < 7; i++) {
+    r = r.add(x.div(r)).shr(1);
+  }
+
+  const r1 = x.div(r);
+  return r.lt(r1) ? r : r1;
+}
 
 function computeFictiveReserves(
   reserveIn,

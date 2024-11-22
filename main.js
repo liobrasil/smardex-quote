@@ -1,4 +1,4 @@
-const { ethers } = require("ethers");
+const { ethers, BigNumber } = require("ethers");
 const {
   computeFirstTradeQtyIn,
   ratioApproxEq,
@@ -943,7 +943,7 @@ const SMARDEX_PAIR_ABI = [
 ];
 
 // Constants
-const FEES_BASE = ethers.BigNumber.from("1000000");
+const FEES_BASE = BigNumber.from("1000000");
 
 function getAmountOut({
   amount,
@@ -1086,7 +1086,7 @@ async function main() {
   console.log(`Fees Pool: ${feesPool}`);
 
   // Example: Compute getAmountOut
-  const amountIn = ethers.BigNumber.from("1000000000000000000"); // 1 token with 18 decimals
+  const amountIn = BigNumber.from("100"); // 1 token with 18 decimals
 
   const smardexRouterContract = new ethers.Contract(
     SMARDEX_ROUTER_ADDRESS,
@@ -1121,10 +1121,10 @@ async function main() {
   });
 
   // Les deux valeurs
-  const amountOutFromLocalFunction = ethers.BigNumber.from(
+  const amountOutFromLocalFunction = BigNumber.from(
     result.amountOut.toString()
   );
-  const amountOutFromRouter = ethers.BigNumber.from(amountOut.toString());
+  const amountOutFromRouter = BigNumber.from(amountOut.toString());
 
   // Calcul de la différence relative en pourcentage
   const differenceRelativePercentage =
